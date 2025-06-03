@@ -1,0 +1,4 @@
+requests==2.31.0
+label-studio-sdk
+python-dotenv
+python-dotenv==1.0.0

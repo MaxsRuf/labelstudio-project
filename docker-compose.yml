@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  labelstudio:
+    image: heartexlabs/label-studio:latest
+    container_name: label-studio
+    ports:
+      - "8080:8080"
+    environment:
+      - LABEL_STUDIO_LOCAL_FILES_SERVING_ENABLED=true
+      - LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT=/label-studio/data
+      - DJANGO_DB=default
+      - POSTGRE_NAME=${POSTGRES_DB:-labelstudio}
+      - POSTGRE_USER=${POSTGRES_USER:-labelstudio}
+      - POSTGRE_PASSWORD=${POSTGRES_PASSWORD:-labelstudio}
+      - POSTGRE_PORT=5432
+      - POSTGRE_HOST=postgres
+    volumes:
+      - ./data/labelstudio:/label-studio/data:rw
+      - ./data/media:/label-studio/media:rw
+    depends_on:
+      - postgres
+    networks:
+      - labelstudio-network
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:13
+    container_name: labelstudio-postgres
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-labelstudio}
+      - POSTGRES_USER=${POSTGRES_USER:-labelstudio}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-labelstudio}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - labelstudio-network
+    restart: unless-stopped
+
+  python-scripts:
+    build:
+      context: ./python-scripts
+      dockerfile: Dockerfile
+    container_name: python-scripts
+    volumes:
+      - ./python-scripts:/app/scripts
+      - ./data/labelstudio:/shared-data:rw
+    environment:
+      - LABEL_STUDIO_URL=http://labelstudio:8080
+      - LABEL_STUDIO_API_KEY=${LABEL_STUDIO_API_KEY:-}
+    networks:
+      - labelstudio-network
+    depends_on:
+      - labelstudio
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  labelstudio-network:
+    driver: bridge
