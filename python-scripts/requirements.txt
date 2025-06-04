@@ -7,4 +7,4 @@ label-studio-sdk==0.0.34
 
 # Computer Vision и Machine Learning
 ultralytics>=8.0.0
-opencv-python==4.8.1# Проект Label Studio + Python
+opencv-python==4.8.1
