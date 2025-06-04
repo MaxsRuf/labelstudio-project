@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   labelstudio:
     image: heartexlabs/label-studio:latest
@@ -52,6 +50,25 @@ services:
       - labelstudio-network
     depends_on:
       - labelstudio
+    restart: unless-stopped
+
+  ml-backend:
+    build:
+      context: ./ml-backend
+      dockerfile: Dockerfile
+    container_name: yolo-ml-backend
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./ml-backend:/app
+      - ./data/labelstudio:/shared-data:rw
+      - ./models:/app/models:rw
+    environment:
+      - YOLO_MODEL_PATH=${YOLO_MODEL_PATH:-/app/models/yolo11x.pt}
+      - YOLO_CONFIDENCE=${YOLO_CONFIDENCE:-0.25}
+      - ML_BACKEND_PORT=9090
+    networks:
+      - labelstudio-network
     restart: unless-stopped
 
 volumes:

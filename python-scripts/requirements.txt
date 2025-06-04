@@ -1,4 +1,10 @@
+# Базовые зависимости
 requests==2.31.0
-label-studio-sdk
-python-dotenv
 python-dotenv==1.0.0
+
+# Label Studio SDK
+label-studio-sdk==0.0.34
+
+# Computer Vision и Machine Learning
+ultralytics>=8.0.0
+opencv-python==4.8.1# Проект Label Studio + Python
