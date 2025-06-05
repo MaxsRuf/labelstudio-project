@@ -1,3 +1,5 @@
+#docker compose exec python-scripts python /app/scripts/create_project.py   
+#                                                                                                                                               
 import os
 import logging
 from dotenv import load_dotenv
@@ -51,6 +53,11 @@ def create_project_with_images():
         project = client.projects.create(title='Document Detection Project', label_config=label_config)
         logger.info(f"Проект создан: ID={project.id}, Title={project.title}")
 
+        # Подключение ML backend
+        ml_backend = client.ml.create(
+            url="http://ml-backend:9090",
+            project=project.id
+        )
 
         # Поиск изображений
         images_dir = "/shared-data/media/images"
@@ -84,3 +91,4 @@ if __name__ == "__main__":
         logger.info(f"Проект успешно создан с ID: {project_id}")
     else:
         logger.error("Не удалось создать проект")
+

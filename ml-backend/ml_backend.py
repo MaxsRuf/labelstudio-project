@@ -9,6 +9,7 @@ from PIL import Image
 import io
 import requests
 from urllib.parse import urlparse, unquote
+import torch
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
@@ -29,7 +30,12 @@ class YOLOMLBackend:
             else:
                 logger.info("Загружаем стандартную модель yolo11x")
                 self.model = YOLO('yolo11x.pt')
+                print(model_path)
+                print(os.__file__)
                 
+            device = 'cuda' if torch.cuda.is_available() else 'cpu'
+            logger.info(f"YOLO будет использовать устройство: {device}")
+            self.model.to(device)    
             logger.info("YOLO модель успешно загружена")
             
             # Получаем названия классов из модели
@@ -87,7 +93,8 @@ class YOLOMLBackend:
                 return []
 
             # Получаем предсказания от YOLO
-            results = self.model(image, conf=self.confidence_threshold)
+            results = self.model(image, conf=self.confidence_threshold, imgsz=1024)
+
             
             predictions = []
             
@@ -112,14 +119,7 @@ class YOLOMLBackend:
                         
                         # Маппинг классов на метки Label Studio
                         label_mapping = {
-                            'document': 'document',
-                            'paper': 'document', 
-                            'page': 'document',
-                            'text': 'text',
-                            'table': 'table',
-                            'figure': 'figure',
-                            'image': 'figure',
-                            'logo': 'figure'
+                            'document': 'document'
                         }
                         
                         label = label_mapping.get(class_name.lower(), 'document')
@@ -154,7 +154,8 @@ def init_ml_backend():
     """Инициализация ML Backend"""
     global ml_backend
     
-    model_path = os.getenv('YOLO_MODEL_PATH', '/app/models/yolo11x.pt')
+    model_path ="/app/models/model.pt"      
+    print(model_path)
     confidence = float(os.getenv('YOLO_CONFIDENCE', '0.25'))
     
     logger.info(f"Инициализация ML Backend с моделью: {model_path}")

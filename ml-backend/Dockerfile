@@ -26,7 +26,7 @@ RUN mkdir -p /app/models
 COPY ml_backend.py .
 
 # Переменные окружения
-ENV YOLO_MODEL_PATH=/app/models/yolo11x.pt
+ENV YOLO_MODEL_PATH=/app/models/model.pt
 ENV YOLO_CONFIDENCE=0.25
 ENV ML_BACKEND_PORT=9090
 ENV PYTHONUNBUFFERED=1

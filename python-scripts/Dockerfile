@@ -12,3 +12,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Копирование исходников
 COPY . /app
 WORKDIR /app
+
+CMD ["tail", "-f", "/dev/null"]
