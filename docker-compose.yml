@@ -70,11 +70,11 @@ services:
     networks:
       - labelstudio-network
     restart: unless-stopped
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - capabilities: [gpu]
+#    deploy:
+#      resources:
+#        reservations:
+#          devices:
+#s            - capabilities: [gpu]
 
 volumes:
   postgres_data:
